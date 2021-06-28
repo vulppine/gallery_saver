@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:path/path.dart';
 
 const List<String> videoFormats = [
@@ -7,7 +9,8 @@ const List<String> videoFormats = [
   '.wmv',
   '.3gp',
   '.mkv',
-  '.flv'
+  '.flv',
+  '.webm'
 ];
 const List<String> imageFormats = [
   '.jpeg',
@@ -25,8 +28,15 @@ bool isLocalFilePath(String path) {
   return !uri.scheme.contains(http);
 }
 
-bool isVideo(String path) =>
-    videoFormats.contains(extension(path).toLowerCase());
+bool isVideo(String path) {
+    // force check for iOS and WebM video, and return false if it is
+    // since iOS doesn't support WebM video within its gallery
+    if (Platform.isIOS && extension(path).toLowerCase() == '.webm') {
+      return false;
+    }
+
+    return videoFormats.contains(extension(path).toLowerCase());
+}
 
 bool isImage(String path) =>
     imageFormats.contains(extension(path).toLowerCase());
